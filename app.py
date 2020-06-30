@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, abort
-
+from flask.logging import create_logger 
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -12,6 +12,7 @@ from linebot.models import (
 )
 
 app = Flask(__name__)
+LOG = create_logger(app)
 
 line_bot_api = LineBotApi('YOUR_CHANNEL_ACCESS_TOKEN')
 handler = WebhookHandler('YOUR_CHANNEL_SECRET')
@@ -24,7 +25,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    LOG.info("Request body: " + body)
 
     # handle webhook body
     try:
@@ -37,9 +38,17 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+
+    msg = (event.message.text).lower()
+
+    if 'hello' or 'hi' or 'hai' in msg :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='Hello pengguna!'))
+    else :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=event.message.text))
 
 
 if __name__ == "__main__":
