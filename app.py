@@ -41,7 +41,7 @@ def handle_message(event):
 
     msg = (event.message.text).lower()
 
-    if 'hello' or 'hi' or 'hai' in msg :
+    if ('hai' in msg) or ('hello' in msg) or ('hai' in msg) or ('hi' in msg) :
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='Hello pengguna!'))
