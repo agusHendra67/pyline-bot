@@ -1,11 +1,12 @@
 import os
+import pandas as pd
 from flask import Flask, request, abort
 from flask.logging import create_logger 
 from linebot import (
     LineBotApi, WebhookHandler
 )
 from linebot.exceptions import (
-    InvalidSignatureError
+    InvalidSignatureError, LineBotApiError
 )
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
@@ -36,9 +37,11 @@ def callback():
     return 'OK'
 
 
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
 
+    data = pd.DataFrame()
     msg = (event.message.text).lower()
 
     if ('hai' in msg) or ('hello' in msg) or ('hai' in msg) or ('hi' in msg) :
@@ -48,7 +51,13 @@ def handle_message(event):
     else :
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=event.message.text))
+            TextSendMessage(text='Terimakasih, tanggapan anda akan disimpan di sistem :)'))
+        
+    profile = line_bot_api.get_profile(event.user_id)
+    #waktu 
+    data['profile'] = profile
+    data['komplain_teks'] = msg
+    data.to_csv('Data Teks Komplain LINE')
 
 
 if __name__ == "__main__":
